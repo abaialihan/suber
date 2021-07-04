@@ -19,7 +19,7 @@
         <item name="android:windowBackground">@drawable/splash</item>
     </style>
 
-    <style name="loginTheme" parent="FirebaseUI">
+    <style name="LoginTheme" parent="FirebaseUI">
         
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>

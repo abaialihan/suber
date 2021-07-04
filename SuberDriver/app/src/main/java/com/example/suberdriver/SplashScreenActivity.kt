@@ -18,10 +18,6 @@ import java.util.concurrent.TimeUnit
 
 class SplashScreenActivity : AppCompatActivity() {
 
-    companion object{
-       private val LOGIN_REQUEST_CODE = 7366
-    }
-
     private lateinit var providers: List<AuthUI.IdpConfig>
     private lateinit var firebaseAut: FirebaseAuth
     private lateinit var listener: FirebaseAuth.AuthStateListener
@@ -33,8 +29,15 @@ class SplashScreenActivity : AppCompatActivity() {
 
     override fun onStop() {
         if(firebaseAut != null && listener != null)
-            firebaseAut.removeAuthStateListener { listener }
+            firebaseAut.removeAuthStateListener(listener)
         super.onStop()
+    }
+
+    private fun delaySplashScreen() {
+        Completable.timer(3, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
+            .subscribe ({
+                firebaseAut.addAuthStateListener { listener }
+            })
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,15 +45,8 @@ class SplashScreenActivity : AppCompatActivity() {
         init()
     }
 
-    private fun delaySplashScreen() {
-        Completable.timer(3, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
-            .subscribe {
-                firebaseAut.addAuthStateListener { listener }
-            }
-    }
-
     private fun init(){
-        providers = listOf(
+        providers = Arrays.asList(
             AuthUI.IdpConfig.PhoneBuilder().build(),
             AuthUI.IdpConfig.GoogleBuilder().build()
         )
@@ -59,65 +55,45 @@ class SplashScreenActivity : AppCompatActivity() {
         listener = FirebaseAuth.AuthStateListener { myFirebaseAuth ->
             val user = myFirebaseAuth.currentUser
             if (user != null)
-                Toast.makeText(this, "Welcome " + user.uid, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@SplashScreenActivity, "Welcome " + user.uid, Toast.LENGTH_SHORT).show()
             else
-                resultLauncher
-                //showLoginLayout()
+                showLoginLayout()
         }
     }
-    var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
+    private fun showLoginLayout() {
         val authMethodPickerLayout = AuthMethodPickerLayout.Builder(R.layout.sign_in_layout)
             .setPhoneButtonId(R.id.btn_phone_sign_in)
             .setGoogleButtonId(R.id.btn_google_sign_in)
             .build()
 
-        AuthUI.getInstance()
+        val intent: Intent = AuthUI.getInstance()
             .createSignInIntentBuilder()
             .setAuthMethodPickerLayout(authMethodPickerLayout)
-            .setTheme(R.style.loginTheme)
+            .setTheme(R.style.LoginTheme)
             .setAvailableProviders(providers)
             .setIsSmartLockEnabled(false)
             .build()
 
+        resultLauncher.launch(intent)
+    }
+
+    var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            // There are no request codes
             val data: Intent? = result.data
             val user = FirebaseAuth.getInstance().currentUser
-        }else{
-
         }
     }
 
-//    private fun showLoginLayout() {
-//        val authMethodPickerLayout = AuthMethodPickerLayout.Builder(R.layout.sign_in_layout)
-//            .setPhoneButtonId(R.id.btn_phone_sign_in)
-//            .setGoogleButtonId(R.id.btn_google_sign_in)
-//            .build()
-//
-//        resultLauncher.launch(intent, LOGIN_REQUEST_CODE)
-//
-//        startActivityForResult(AuthUI.getInstance()
-//            .createSignInIntentBuilder()
-//            .setAuthMethodPickerLayout(authMethodPickerLayout)
-//            .setTheme(R.style.loginTheme)
-//            .setAvailableProviders(providers)
-//            .setIsSmartLockEnabled(false)
-//            .build(),
-//        LOGIN_REQUEST_CODE )
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        if (requestCode == LOGIN_REQUEST_CODE){
+//            val response = IdpResponse.fromResultIntent(data)
+//            if(resultCode == Activity.RESULT_OK){
+//                val user = FirebaseAuth.getInstance().currentUser
+//            }
+//            else
+//                Toast.makeText(this, "" + response!!.error!!.message, Toast.LENGTH_SHORT).show()
+//        }
 //    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == LOGIN_REQUEST_CODE){
-            val response = IdpResponse.fromResultIntent(data)
-            if(resultCode == Activity.RESULT_OK){
-                val user = FirebaseAuth.getInstance().currentUser
-            }
-            else
-                Toast.makeText(this, "" + response!!.error!!.message, Toast.LENGTH_SHORT).show()
-        }
-    }
-
-
 }
