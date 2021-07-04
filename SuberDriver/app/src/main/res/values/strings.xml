@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Suber Driver</string>
+    <string name="sign_in_with_phone">Sign In with Phone</string>
+    <string name="sign_in_with_google">Sign In with Google</string>
+    <string name="welcome_user">Welcome </string>
+
 </resources>
