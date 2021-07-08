@@ -3,5 +3,16 @@
     <string name="sign_in_with_phone">Sign In with Phone</string>
     <string name="sign_in_with_google">Sign In with Google</string>
     <string name="welcome_user">Welcome </string>
+    <string name="user_already_register">User already register!</string>
+    <string name="continue_text">Continue</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="register_text">Let\'s start with creating your account</string>
+    <string name="enter_first_name">Please, enter First Name</string>
+    <string name="enter_last_name">Please, enter Last Name</string>
+    <string name="enter_phone_number">Please, enter Phone Number</string>
+    <string name="register_successfully">Register Successfully</string>
+
 
 </resources>

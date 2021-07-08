@@ -16,23 +16,24 @@
         android:gravity="center_horizontal"
         android:padding="16dp">
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
+
             android:id="@+id/btn_google_sign_in"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:background="@color/white"
+            android:background="@android:color/white"
             android:drawableStart="@drawable/ic_baseline_phone_24"
             android:padding="16dp"
             android:text="@string/sign_in_with_google"
             android:textColor="@color/black" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_phone_sign_in"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:background="@color/white"
+            android:background="@android:color/white"
             android:drawableStart="@drawable/fui_ic_googleg_color_24dp"
             android:padding="16dp"
             android:text="@string/sign_in_with_phone"
