@@ -13,29 +13,30 @@
         android:orientation="vertical"
         android:layout_margin="16dp"
         android:layout_centerHorizontal="true"
+        android:gravity="center_horizontal"
         android:padding="16dp">
 
         <Button
             android:id="@+id/btn_google_sign_in"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:padding="16dp"
             android:layout_marginBottom="10dp"
+            android:background="@color/white"
             android:drawableStart="@drawable/ic_baseline_phone_24"
-            android:text="@string/sign_in_with_phone"
-            android:textColor="@color/black"/>
+            android:padding="16dp"
+            android:text="@string/sign_in_with_google"
+            android:textColor="@color/black" />
 
         <Button
             android:id="@+id/btn_phone_sign_in"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:padding="16dp"
             android:layout_marginBottom="10dp"
+            android:background="@color/white"
             android:drawableStart="@drawable/fui_ic_googleg_color_24dp"
-            android:text="@string/sign_in_with_google"
-            android:textColor="@color/black"/>
+            android:padding="16dp"
+            android:text="@string/sign_in_with_phone"
+            android:textColor="@color/black" />
 
 
     </LinearLayout>
