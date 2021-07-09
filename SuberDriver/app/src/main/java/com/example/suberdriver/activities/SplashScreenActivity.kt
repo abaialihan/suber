@@ -1,4 +1,4 @@
-package com.example.suberdriver.activityes
+package com.example.suberdriver.activities
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -11,8 +11,9 @@ import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.Toast
+import com.example.suberdriver.Common
 import com.example.suberdriver.R
-import com.example.suberdriver.activityes.model.DriverInfoModel
+import com.example.suberdriver.model.DriverInfoModel
 import com.firebase.ui.auth.AuthMethodPickerLayout
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
@@ -86,7 +87,9 @@ class SplashScreenActivity : AppCompatActivity() {
             .addListenerForSingleValueEvent(object: ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()){
-                        Toast.makeText(this@SplashScreenActivity, R.string.user_already_register, Toast.LENGTH_SHORT).show()
+                        //Toast.makeText(this@SplashScreenActivity, R.string.user_already_register, Toast.LENGTH_SHORT).show()
+                        val model = snapshot.getValue(DriverInfoModel::class.java)
+                        goToHomeActivity(model)
                     }else{
                         showRegisterLayout()
                     }
@@ -96,6 +99,12 @@ class SplashScreenActivity : AppCompatActivity() {
                     Toast.makeText(this@SplashScreenActivity, error.message, Toast.LENGTH_SHORT).show()
                 }
             })
+    }
+
+    private fun goToHomeActivity(model: DriverInfoModel?) {
+        Common.currentUser = model
+        startActivity(Intent(this, DriverHomeActivity::class.java))
+        finish()
     }
 
     private fun showRegisterLayout() {
@@ -151,6 +160,8 @@ class SplashScreenActivity : AppCompatActivity() {
                     .addOnSuccessListener {
                         Toast.makeText(this, R.string.register_successfully, Toast.LENGTH_SHORT).show()
                         dialog.dismiss()
+
+                        goToHomeActivity(model)
                         progressBar.visibility = View.GONE
                     }
             }

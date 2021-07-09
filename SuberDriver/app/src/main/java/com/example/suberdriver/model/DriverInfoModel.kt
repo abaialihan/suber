@@ -1,4 +1,4 @@
-package com.example.suberdriver.activityes.model
+package com.example.suberdriver.model
 
 class DriverInfoModel {
      var firstName: String = ""

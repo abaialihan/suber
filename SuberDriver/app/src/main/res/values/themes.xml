@@ -20,7 +20,7 @@
     </style>
 
     <style name="LoginTheme" parent="FirebaseUI">
-        
+
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -49,4 +49,13 @@
         <item name="windowNoTitle">true</item>
         <item name="android:windowIsFloating">false</item>
     </style>
+
+    <style name="Theme.SuberDriver.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.SuberDriver.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.SuberDriver.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>
