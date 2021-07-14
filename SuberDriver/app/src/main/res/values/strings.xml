@@ -9,6 +9,7 @@
     <string name="last_name">Last Name</string>
     <string name="phone_number">Phone Number</string>
     <string name="register_text">Let\'s start with creating your account</string>
+    <string name="do_really_exit">Do you really want to sign out</string>
     <string name="enter_first_name">Please, enter First Name</string>
     <string name="enter_last_name">Please, enter Last Name</string>
     <string name="enter_phone_number">Please, enter Phone Number</string>
@@ -23,7 +24,8 @@
 
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
-    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_sign_out">Sign out</string>
+    <string name="cancel">Cancel</string>
     <string name="title_activity_maps">Map</string>
 
 
