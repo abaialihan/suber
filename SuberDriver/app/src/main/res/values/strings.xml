@@ -10,10 +10,17 @@
     <string name="phone_number">Phone Number</string>
     <string name="register_text">Let\'s start with creating your account</string>
     <string name="do_really_exit">Do you really want to sign out</string>
+    <string name="do_really_change_avatar">Do you really want to change avatar</string>
     <string name="enter_first_name">Please, enter First Name</string>
     <string name="enter_last_name">Please, enter Last Name</string>
     <string name="enter_phone_number">Please, enter Phone Number</string>
     <string name="register_successfully">Register Successfully</string>
+    <string name="update_successfully">Update info successfully</string>
+    <string name="select_picture">Select picture</string>
+    <string name="change_avatar">Change avatar</string>
+    <string name="change">Change</string>
+    <string name="waiting">Waiting...</string>
+    <string name="uploading">Uploading: </string>
     <string name="title_activity_driver_home">DriverHomeActivity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

@@ -1,10 +1,13 @@
 package com.example.suberdriver.activities
 
-import android.content.DialogInterface
+import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.Menu
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.snackbar.Snackbar
@@ -17,10 +20,14 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
+import com.bumptech.glide.Glide
 import com.example.suberdriver.Common
 import com.example.suberdriver.R
 import com.example.suberdriver.databinding.ActivityDriverHomeBinding
+import com.example.suberdriver.utils.UserUtils
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 
 class DriverHomeActivity : AppCompatActivity() {
 
@@ -29,6 +36,10 @@ class DriverHomeActivity : AppCompatActivity() {
     private lateinit var navView: NavigationView
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navController: NavController
+    private lateinit var imageAvatar: ImageView
+    private lateinit var waitingDialog: AlertDialog
+    private lateinit var storageReference: StorageReference
+    private var imageUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,10 +63,15 @@ class DriverHomeActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_home), drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-        buildAlertDialog()
+        buildAlertDialogForSignOut()
     }
 
-    private fun buildAlertDialog(){
+    //Build AlertDialog for sing out
+    private fun buildAlertDialogForSignOut(){
+        storageReference = FirebaseStorage.getInstance().reference
+
+        buildWaitingDialog()
+
         navView.setNavigationItemSelectedListener {
             if (it.itemId == R.id.nav_sign_out){
                 val builder = AlertDialog.Builder(this)
@@ -87,15 +103,111 @@ class DriverHomeActivity : AppCompatActivity() {
         initializeDriverInfo()
     }
 
+    private fun buildWaitingDialog(){
+        waitingDialog = AlertDialog.Builder(this)
+            .setMessage(R.string.waiting)
+            .setCancelable(false)
+            .create()
+    }
+
+    //Parsing Driver info and show in panel
     private fun initializeDriverInfo(){
         val headerView = navView.getHeaderView(0)
         val txtName = headerView.findViewById<View>(R.id.txt_full_name) as TextView
         val txtPhone = headerView.findViewById<View>(R.id.txt_phone) as TextView
         val txtRate = headerView.findViewById<View>(R.id.txt_rate) as TextView
+        imageAvatar = headerView.findViewById<View>(R.id.img_avatar) as ImageView
 
         txtName.text = Common.currentUser!!.firstName + " " + Common.currentUser!!.lastName
         txtPhone.text = Common.currentUser!!.phoneNumber
         txtRate.text = Common.currentUser!!.rating.toString()
+
+        imageLoad()
+    }
+
+    //Image loader function
+    private fun imageLoad(){
+        if (Common.currentUser != null
+            && Common.currentUser!!.avatar != null
+            && !TextUtils.isEmpty(Common.currentUser!!.avatar))
+        {
+            Glide.with(this)
+                .load(Common.currentUser!!.avatar)
+                .into(imageAvatar)
+        }
+
+        imageAvatar.setOnClickListener{
+            val intent = Intent()
+            intent.type = "image/*"
+            intent.action = Intent.ACTION_GET_CONTENT
+            startActivityForResult(Intent.createChooser(intent, R.string.select_picture.toString()), PICK_IMAGE_REQUEST)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK){
+            if (data != null && data.data != null){
+                imageUri = data.data
+                imageAvatar.setImageURI(imageUri)
+
+                showDialogUpload()
+            }
+        }
+    }
+
+    private fun showDialogUpload() {
+        val builder = AlertDialog.Builder(this)
+
+        builder.setTitle(R.string.change_avatar)
+            .setMessage(R.string.do_really_change_avatar)
+            .setNegativeButton(R.string.cancel) {dialog, wich ->
+                dialog.dismiss()
+            }
+            .setPositiveButton(R.string.change) {dialog, wich ->
+                if (imageUri != null) {
+                    waitingDialog.show()
+                    setAvatarFolder()
+                }
+            }.setCancelable(false)
+
+        val dialog = builder.create()
+
+        dialog.setOnShowListener {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                .setTextColor(resources.getColor(R.color.black))
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+                .setTextColor(resources.getColor(R.color.black))
+        }
+
+        dialog.show()
+    }
+
+    private fun setAvatarFolder(){
+        val avatarFolder = storageReference.child("avatar/" + FirebaseAuth.getInstance().currentUser!!.uid)
+
+        avatarFolder.putFile(imageUri!!)
+            .addOnFailureListener{ e ->
+                Snackbar.make(drawerLayout, e.message!!, Snackbar.LENGTH_LONG).show()
+                waitingDialog.dismiss()
+            }
+            .addOnCompleteListener{ task ->
+                if(task.isSuccessful){
+                    avatarFolder.downloadUrl.addOnSuccessListener { uri ->
+                        val updateData = HashMap<String, Any>()
+
+                        updateData.put("avatar", uri.toString())
+
+                        UserUtils.updateData(drawerLayout, updateData)
+                    }
+                }
+                waitingDialog.dismiss()
+            }
+            .addOnProgressListener { taskSnapshoot ->
+                val progress = (100.0 * taskSnapshoot.bytesTransferred / taskSnapshoot.totalByteCount)
+                waitingDialog.setMessage(R.string.uploading.toString() + progress + "%")
+            }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -107,5 +219,9 @@ class DriverHomeActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_driver_home)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    companion object{
+        const val PICK_IMAGE_REQUEST = 7272
     }
 }
